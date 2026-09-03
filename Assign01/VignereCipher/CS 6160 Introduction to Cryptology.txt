@@ -1,0 +1,191 @@
+CS 6160: Introduction to Cryptology
+
+Homework Assignment 1
+
+Shibam Ghosh
+IIT Hyderabad
+July 28, 2026
+
+Please provide proper instructions on how to run the program. The submission deadline is
+6th August, 2026.
+
+1 Homework 1 (30 Points)
+
+In classical cryptanalysis, breaking substitution ciphers (such as the monoalphabetic substitu-
+tion cipher) relies on understanding the underlying statistical distribution of the target language.
+
+In standard English, for example, the letter ’E’ accounts for approximately 12.7% of all alpha-
+betic characters, followed by ’T’ (≈ 9.1%) and ’A’ (≈ 8.2%).
+
+Your task is to write a C or C++ program that reads an unparsed, raw text file (e.g., raw text
+extracted from Wikipedia or Project Gutenberg) and computes the empirical relative frequency
+percentage of each letter (A–Z).
+1.1 Requirements
+1. File Input: Your program must accept a text file path via command-line arguments (e.g.,
+./freq analyzer input.txt).
+
+2. Case Insensitivity: Handle both uppercase (A–Z) and lowercase (a–z) characters, nor-
+malizing them into the same frequency bin (i.e., ’a’ and ’A’ must both increment the
+
+count for letter A).
+3. Non-Alphabetic Filtering: Ignore punctuation, numbers, whitespaces, newlines, and
+special characters. They must not contribute to the total count of alphabetic characters.
+4. Relative Frequency Calculation: For each letter c ∈ {A, B, . . . , Z}, compute its relative
+frequency percentage f(c) using the formula:
+
+f(c) = 
+
+Count(c)
+
+Total Alphabetic Characters
+× 100%
+
+5. Output Formatting: Print a clean, formatted table displaying each letter, its absolute
+count, and its calculated relative frequency percentage rounded to two decimal places.
+
+1
+
+1.2 Hints & ASCII Table Inspection
+Before writing your program, inspect the standard ASCII character table in your Linux terminal
+by running:
+$ man 7 ascii
+Pay close attention to the decimal ranges for the English alphabet, this will help you with the
+steps 2 and 3:
+• Uppercase range (‘A’–‘Z’): Decimal values 65 to 90.
+• Lowercase range (‘a’–‘z’): Decimal values 97 to 122.
+
+2 Homework 2 (70 Points)
+This is the ciphertext of a Vigenere cipher: `
+DVNSJ QRVPC GWBVZ QGVVP VILQJ VTURP BNPZN TGQIG SIGVW MTCIM FQUIA CCKVG CBYKQ
+ZNTNB UCIEN UHIVF IWPQC BNKCM IGGGV OEWEV PVGFX APQKM EATDR TBIQG IPRNX JECGQ
+NPLMY EDURF IPRXX AVVDZ JKIPN UBQYG PVQGM XYCXV RFIPN VIPRI GMNVT AGVGM NUJZR
+KCBUG QCVNS QAILI FPDBN UXVTN TJBQZ JHVIP RMCWJ NTLTG IPNVR WAPTK GGSBU GBIYN
+TDRTN ZBQBK BPIIV PTLZC CCFEG QCVHW AFXNS GGMAV HCOLT KGUXV PNJLV PVUNV WMZCI
+QPUPA GTDVB ONXUK AWFQE PLOTL VEXVR GCOVP TMEKC ONPSP VUIWE AIPRU RPBNP ZQGRQ
+QGSBB UEMAF IPRFP GRZET BTXVT GKMEA RWEPT ZBHIP RNXJE CGGGJ TNVTH BEQDU PQCBN
+KCMQD DWXUD VZCIP ROPBV EHBUG HKUQA IETTI QCQWH VCCZD TZFIT WZGIZ VEUQT WGMFC
+CLRNT ONPIX EQDNF VWIGJ PLVPH XVTTL TGCME CIQBP HWSVW QAMTZ FQCMZ CCCFE GQCVS
+MFEGQ OGSPB YHQZR AMBDH MEXPB VQCAP QJTQN TIQVD LRGEB UGDZR OHEUK AMNPD BUGGM
+KRAIV PTLUQ LIOUI ZNEIQ QGPAB HIMAH DCAFE ZNEIQ PCAIC RAQPC IQBPH KRPIC EKTAY
+CIMEV WMFEW WYCGZ RCAQF GSBUC IUNVW MZCIQ PULIF PDBZG GMYAP KBNAM PVXWA QUNBT
+BCYCH JHVPT NPVCN ITNBT SMFEG QOKCO CCIBR TCANP SZRCH WAKCO NDDCG VWMJQ GTQ
+Your task is to write a Python program that breaks the Vigenere cipher and finds the encryption `
+key. The program must decrypt the ciphertext using the Vigenere cipher decryption algorithm `
+(i.e., you have to implement a decryption function) and output the plaintext.
+
+3 Hint: Tutorial on Breaking the Vigenere Cipher `
+This tutorial is to help you understand the classical attack against the Vigenere cipher. The `
+classical attack against the Vigenere cipher is known as ` Kasiski’s Method. The attack consists
+of two independent stages.
+1. Estimate the length of the secret key.
+2. Recover each letter of the secret key individually.
+Once the secret key has been recovered, decrypting the ciphertext becomes straightforward.
+Suppose the secret key is MATH, whose length is l = 4. During encryption, the key is repeated.
+For example,
+
+Plaintext A T T A C K A T D A W N
+Key M A T H M A T H M A T H
+
+Notice that
+
+2
+
+• positions 0, 4, 8, . . . are encrypted using the letter M,
+• positions 1, 5, 9, . . . are encrypted using the letter A,
+• positions 2, 6, 10, . . . are encrypted using the letter T,
+• positions 3, 7, 11, . . . are encrypted using the letter H.
+Therefore, if the key length is known, the ciphertext can be divided into l independent
+groups. For l = 4, we obtain four slices or buckets
+S1 : C0, C4, C8, C12, . . .
+S2 : C1, C5, C9, C13, . . .
+S3 : C2, C6, C10, C14, . . .
+S4 : C3, C7, C11, C15, . . .
+Each group has been encrypted using exactly one shift. Hence,
+Breaking one Vigenere cipher is equivalent to breaking ` l independent shift ciphers.
+3.1 Step 1: Estimating the Key Length
+The first challenge is determining the unknown key length. To do this we use the Index of
+Coincidence (IoC). Suppose a text contains N letters. Let ni denote the number of occurrences
+of the i-th letter of the alphabet. The Index of Coincidence is defined as
+
+I =
+26X
+25
+i=0
+ni(ni − 1)
+N(N − 1) .
+
+The IoC measures the probability that two randomly selected letters from the text are iden-
+tical. Typical values are
+
+Random text ≈ 1,
+English text ≈ 1.7.
+
+3.1.1 Estimating the Key Length Using IoC
+Assume the candidate key length is l. Split the ciphertext into l slices. For example, if l = 4,
+
+S1 : C0, C4, C8, C12, . . .
+S2 : C1, C5, C9, C13, . . .
+S3 : C2, C6, C10, C14, . . .
+S4 : C3, C7, C11, C15, . . .
+
+If the guessed key length is correct, each slice has been encrypted using a single shift
+cipher and therefore resembles ordinary English. Consequently, its IoC will be close to that of
+English. If the guessed key length is incorrect, each slice mixes several shift ciphers together,
+producing text that is closer to random. Consequently, its IoC will be much smaller. Therefore,
+we compute the average IoC for every candidate key length and select the smallest candidate
+whose average IoC is close to that of English.
+
+3
+
+3.1.2 Algorithm for Estimating the Key Length
+Input: Ciphertext C, maximum key length L.
+Output: Estimated key length l.
+1. For every candidate key length j = 1, 2, . . . , L:
+(a) Split the ciphertext into j slices.
+(b) Compute the IoC of every slice.
+(c) Compute the average IoC.
+2. Return the smallest key length whose average IoC is closest to English.
+3.2 Step 2: Recovering Each Key Letter Using Frequency Analysis
+Once the key length l has been determined, the ciphertext is divided into l independent slices.
+Since all letters in a slice are encrypted using the same shift, each slice is simply a shift cipher.
+The goal is therefore to determine the shift for each slice. Suppose S is one ciphertext slice.
+Since a Caesar cipher has only 26 possible shifts, we simply try every possible shift. For every
+candidate shift k ∈ {0, 1, . . . , 25}, we perform the following steps.
+1. Decrypt the slice using shift k.
+2. Compute the letter-frequency vector γ
+k = (γ
+k
+0
+, γk
+1
+, . . . , γk
+25), where γ
+k
+i denotes the relative
+
+frequency of the i-th letter in the decrypted slice.
+3. Let δ = (δ0, δ1, . . . , δ25) denote the standard frequency distribution of English text.
+4. Compare the two frequency vectors using the cosine similarity
+
+cos(θ) = γ
+k
+· δ
+∥γ
+k∥ ∥δ∥
+, where γ
+k
+· δ =
+X
+25
+i=0
+γ
+k
+i
+δi
+.
+
+The cosine similarity measures how closely the decrypted slice resembles ordinary English.
+If the value of cosine similarity is close to 1 (say more than 0.9), it indicates that the decrypted
+
+slice has a letter distribution closer to English and is therefore more likely to have been de-
+crypted using the correct Caesar shift.
