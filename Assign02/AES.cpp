@@ -19,6 +19,19 @@ vector<unsigned char> Master_key;
 // implement the shift rows also
 void shiftRows(unsigned char *state[4][4])
 {
+    // Shift the rows of the state array
+    for (int r = 1; r < 4; ++r)
+    {
+        unsigned char temp[4];
+        for (int c = 0; c < 4; ++c)
+        {
+            temp[c] = (*state)[r][(c + r) % 4];
+        }
+        for (int c = 0; c < 4; ++c)
+        {
+            (*state)[r][c] = temp[c];
+        }
+    }
 }
 
 // SubTasks for key scheduling function
